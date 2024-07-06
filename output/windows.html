@@ -31,7 +31,7 @@
         top: 0;
         left: 0;
         opacity: 0;
-        transition: opacity 1s ease-in-out;
+        transition: opacity 800ms ease-in-out;
       }
       #window-log {
         position: absolute;
@@ -59,6 +59,7 @@
         const totalDirectories = 40;
         const imagesPerDirectory = 80;
         const fadePace = 200; // Set the same pace for both random and final fade
+        const fadeInTimeMs = 50;
 
         const gridContainer = document.getElementById("grid-container");
         let currentDirectory;
@@ -121,7 +122,7 @@
                 overlayImg.style.opacity = "1";
                 randomItem.classList.add('faded');
                 updateWindowLog(randomDirectory);
-            }, 50);
+            }, fadeInTimeMs);
         }
 
         function fadeInFinalDirectory() {
@@ -143,12 +144,12 @@
                 overlayImg.src = `${parentDirectory}/${finalDirectory}/${finalDirectory}_${imageIndex}${imageExtension}`;
                 overlayImg.alt = `Final Image ${imageIndex}`;
                 overlayImg.className = "overlay-img";
-                updateWindowLog(finalDirectory);
+                gridItem.appendChild(overlayImg);
 
                 setTimeout(() => {
                     overlayImg.style.opacity = "1";
-                    gridItem.appendChild(overlayImg);
-                }, 50);
+                    updateWindowLog(finalDirectory);
+                }, fadeInTimeMs);
             }, fadePace);
         }
 
