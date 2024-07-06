@@ -5,18 +5,22 @@
       body {
         background-color: rgb(73, 73, 73);
       }
+      .grid-container-wrapper {
+        position: relative;
+        width: 100vw;
+        margin: 0 auto;
+      }
       .grid-container {
         display: grid;
         grid-template-columns: repeat(8, 1fr);
         grid-gap: 0px;
-        width: 100vw;
-        margin: 0 auto 0 auto;
+        width: 100%;
       }
       .grid-item {
         position: relative;
       }
       .grid-item img {
-        width: 12.5vw;
+        height: 12.5vw;
         margin: 0;
         padding: 0;
         display: block;
@@ -27,25 +31,50 @@
         top: 0;
         left: 0;
         opacity: 0;
-        transition: opacity 1s ease-in-out;
+        transition: opacity 800ms ease-in-out;
+      }
+      #window-log {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        color: white;
+        font-size: 18px;
+        font-family: Arial, sans-serif;
+        text-shadow: 1px 1px 2px black;
+        z-index: 1000;
       }
     </style>
 </head>
 <body>
-    <div id="grid-container" class="grid-container">
-        <!-- Images will be inserted here by JavaScript -->
+    <div class="grid-container-wrapper">
+        <div id="grid-container" class="grid-container">
+            <!-- Images will be inserted here by JavaScript -->
+        </div>
+        <div id="window-log"></div>
     </div>
 
-    <script>
+    <script>        
         const parentDirectory = ".";
         const imageExtension = ".jpg";
         const totalDirectories = 40;
         const imagesPerDirectory = 80;
         const fadePace = 200; // Set the same pace for both random and final fade
+        const fadeInTimeMs = 50;
 
         const gridContainer = document.getElementById("grid-container");
         let currentDirectory;
         let fadeInterval;
+
+        const windowLogContainer = document.getElementById("window-log");
+        let windowLog = [];
+
+        function updateWindowLog(directory) {
+            windowLog.push(`window number ${directory}`);
+            if (windowLog.length > 9) {
+                windowLog.shift();
+            }
+            windowLogContainer.innerHTML = windowLog.join("<br>");
+        }
 
         function padNumber(num) {
             return num.toString().padStart(2, '0');
@@ -92,7 +121,8 @@
             setTimeout(() => {
                 overlayImg.style.opacity = "1";
                 randomItem.classList.add('faded');
-            }, 50);
+                updateWindowLog(randomDirectory);
+            }, fadeInTimeMs);
         }
 
         function fadeInFinalDirectory() {
@@ -118,7 +148,8 @@
 
                 setTimeout(() => {
                     overlayImg.style.opacity = "1";
-                }, 50);
+                    updateWindowLog(finalDirectory);
+                }, fadeInTimeMs);
             }, fadePace);
         }
 
