@@ -92,7 +92,7 @@
 
                 const img = document.createElement("img");
                 let prefix = currentDirectory;
-                img.src = `${parentDirectory}/${currentDirectory}/${prefix}_${i}${imageExtension}`;
+                img.src = `${parentDirectory}/${currentDirectory}/${i}${imageExtension}`;
                 img.alt = `Image ${i}`;
 
                 gridItem.appendChild(img);
@@ -113,7 +113,7 @@
             const randomImageIndex = Math.floor(Math.random() * imagesPerDirectory);
 
             const overlayImg = document.createElement("img");
-            overlayImg.src = `${parentDirectory}/${randomDirectory}/${randomDirectory}_${randomImageIndex}${imageExtension}`;
+            overlayImg.src = `${parentDirectory}/${randomDirectory}/${randomImageIndex}${imageExtension}`;
             overlayImg.alt = `Overlay Image ${randomImageIndex}`;
             overlayImg.className = "overlay-img";
             randomItem.appendChild(overlayImg);
@@ -141,7 +141,7 @@
 
                 const gridItem = document.querySelectorAll('.grid-item')[imageIndex];
                 const overlayImg = document.createElement("img");
-                overlayImg.src = `${parentDirectory}/${finalDirectory}/${finalDirectory}_${imageIndex}${imageExtension}`;
+                overlayImg.src = `${parentDirectory}/${finalDirectory}/${imageIndex}${imageExtension}`;
                 overlayImg.alt = `Final Image ${imageIndex}`;
                 overlayImg.className = "overlay-img";
                 gridItem.appendChild(overlayImg);
