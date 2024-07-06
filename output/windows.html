@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+      body {
+        background-color: rgb(73, 73, 73);
+      }
+      .grid-container-wrapper {
+        position: relative;
+        width: 80vh;
+        margin: 0 auto;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-gap: 0px;
+        width: 100%;
+      }
+      .grid-item {
+        position: relative;
+      }
+      .grid-item img {
+        height: 10vh;
+        margin: 0;
+        padding: 0;
+        display: block;
+        box-sizing: border-box;
+      }
+      .overlay-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+      }
+      #window-log {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        color: white;
+        font-size: 18px;
+        font-family: Arial, sans-serif;
+        text-shadow: 1px 1px 2px black;
+        z-index: 1000;
+      }
+    </style>
+</head>
+<body>
+    <div class="grid-container-wrapper">
+        <div id="grid-container" class="grid-container">
+            <!-- Images will be inserted here by JavaScript -->
+        </div>
+        <div id="window-log"></div>
+    </div>
+
+    <script>        
+        const parentDirectory = ".";
+        const imageExtension = ".jpg";
+        const totalDirectories = 40;
+        const imagesPerDirectory = 80;
+        const fadePace = 200; // Set the same pace for both random and final fade
+
+        const gridContainer = document.getElementById("grid-container");
+        let currentDirectory;
+        let fadeInterval;
+
+        const windowLogContainer = document.getElementById("window-log");
+        let windowLog = [];
+
+        function updateWindowLog(directory) {
+            windowLog.push(`window number ${directory}`);
+            if (windowLog.length > 9) {
+                windowLog.shift();
+            }
+            windowLogContainer.innerHTML = windowLog.join("<br>");
+        }
+
+        function padNumber(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        function getRandomDirectory() {
+            return padNumber(Math.floor(Math.random() * totalDirectories) + 1);
+        }
+
+        function createInitialGrid() {
+            currentDirectory = getRandomDirectory();
+            for (let i = 0; i < imagesPerDirectory; i++) {
+                const gridItem = document.createElement("div");
+                gridItem.className = "grid-item";
+
+                const img = document.createElement("img");
+                let prefix = currentDirectory;
+                img.src = `${parentDirectory}/${currentDirectory}/${prefix}_${i}${imageExtension}`;
+                img.alt = `Image ${i}`;
+
+                gridItem.appendChild(img);
+                gridContainer.appendChild(gridItem);
+            }
+        }
+
+        function fadeInRandomImage() {
+            const availableItems = Array.from(document.querySelectorAll('.grid-item:not(.faded)'));
+            if (availableItems.length === 0) {
+                clearInterval(fadeInterval);
+                startFinalDirectoryFade();
+                return;
+            }
+
+            const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+            const randomDirectory = getRandomDirectory();
+            const randomImageIndex = Math.floor(Math.random() * imagesPerDirectory);
+
+            const overlayImg = document.createElement("img");
+            overlayImg.src = `${parentDirectory}/${randomDirectory}/${randomDirectory}_${randomImageIndex}${imageExtension}`;
+            overlayImg.alt = `Overlay Image ${randomImageIndex}`;
+            overlayImg.className = "overlay-img";
+            randomItem.appendChild(overlayImg);
+
+            setTimeout(() => {
+                overlayImg.style.opacity = "1";
+                randomItem.classList.add('faded');
+                updateWindowLog(randomDirectory);
+            }, 50);
+        }
+
+        function fadeInFinalDirectory() {
+            const finalDirectory = getRandomDirectory();
+            let remainingIndices = Array.from({length: imagesPerDirectory}, (_, i) => i);
+
+            fadeInterval = setInterval(() => {
+                if (remainingIndices.length === 0) {
+                    clearInterval(fadeInterval);
+                    setTimeout(startRandomFade, 3000);  // Wait 3 seconds before starting random fade again
+                    return;
+                }
+
+                const randomIndex = Math.floor(Math.random() * remainingIndices.length);
+                const imageIndex = remainingIndices.splice(randomIndex, 1)[0];
+
+                const gridItem = document.querySelectorAll('.grid-item')[imageIndex];
+                const overlayImg = document.createElement("img");
+                overlayImg.src = `${parentDirectory}/${finalDirectory}/${finalDirectory}_${imageIndex}${imageExtension}`;
+                overlayImg.alt = `Final Image ${imageIndex}`;
+                overlayImg.className = "overlay-img";
+                updateWindowLog(finalDirectory);
+
+                setTimeout(() => {
+                    overlayImg.style.opacity = "1";
+                    gridItem.appendChild(overlayImg);
+                }, 50);
+            }, fadePace);
+        }
+
+        function startRandomFade() {
+            document.querySelectorAll('.grid-item').forEach(item => item.classList.remove('faded'));
+            fadeInterval = setInterval(fadeInRandomImage, fadePace);
+        }
+
+        function startFinalDirectoryFade() {
+            clearInterval(fadeInterval);
+            fadeInFinalDirectory();
+        }
+
+        function startImageCycle() {
+            createInitialGrid();
+            setTimeout(startRandomFade, 3000);
+        }
+
+        startImageCycle();
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+      body {
+        background-color: rgb(73, 73, 73);
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-gap: 0px;
+        width: 80vh;
+        margin: 0 auto 0 auto;
+      }
+      .grid-item {
+        position: relative;
+      }
+      .grid-item img {
+        height: 10vh;
+        margin: 0;
+        padding: 0;
+        display: block;
+        box-sizing: border-box;
+      }
+      .overlay-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+      }
+    </style>
+</head>
+<body>
+    <div id="grid-container" class="grid-container">
+        <!-- Images will be inserted here by JavaScript -->
+    </div>
+
+    <script>
+        const parentDirectory = ".";
+        const imageExtension = ".jpg";
+        const totalDirectories = 40;
+        const imagesPerDirectory = 80;
+
+        const gridContainer = document.getElementById("grid-container");
+        let currentDirectory;
+        let randomFadeInterval;
+        let finalFadeInterval;
+
+        function padNumber(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        function getRandomDirectory() {
+            return padNumber(Math.floor(Math.random() * totalDirectories) + 1);
+        }
+
+        function createInitialGrid() {
+            currentDirectory = getRandomDirectory();
+            for (let i = 0; i < imagesPerDirectory; i++) {
+                const gridItem = document.createElement("div");
+                gridItem.className = "grid-item";
+
+                const img = document.createElement("img");
+                img.src = `${parentDirectory}/${currentDirectory}/${padNumber(i + 1)}${imageExtension}`;
+                img.alt = `Image ${i + 1}`;
+
+                gridItem.appendChild(img);
+                gridContainer.appendChild(gridItem);
+            }
+        }
+
+        function fadeInRandomImage() {
+            const availableItems = Array.from(document.querySelectorAll('.grid-item:not(.faded)'));
+            if (availableItems.length === 0) {
+                clearInterval(randomFadeInterval);
+                return;
+            }
+
+            const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+            const randomDirectory = getRandomDirectory();
+            const randomImageIndex = Math.floor(Math.random() * imagesPerDirectory) + 1;
+
+            const overlayImg = document.createElement("img");
+            overlayImg.src = `${parentDirectory}/${randomDirectory}/${padNumber(randomImageIndex)}${imageExtension}`;
+            overlayImg.alt = `Overlay Image ${randomImageIndex}`;
+            overlayImg.className = "overlay-img";
+            randomItem.appendChild(overlayImg);
+
+            setTimeout(() => {
+                overlayImg.style.opacity = "1";
+                randomItem.classList.add('faded');
+            }, 50);
+        }
+
+        function fadeInFinalDirectory() {
+            const finalDirectory = getRandomDirectory();
+            let imageIndex = 0;
+
+            finalFadeInterval = setInterval(() => {
+                if (imageIndex >= imagesPerDirectory) {
+                    clearInterval(finalFadeInterval);
+                    return;
+                }
+
+                const gridItem = document.querySelectorAll('.grid-item')[imageIndex];
+                const overlayImg = document.createElement("img");
+                overlayImg.src = `${parentDirectory}/${finalDirectory}/${padNumber(imageIndex + 1)}${imageExtension}`;
+                overlayImg.alt = `Final Image ${imageIndex + 1}`;
+                overlayImg.className = "overlay-img";
+                gridItem.appendChild(overlayImg);
+
+                setTimeout(() => {
+                    overlayImg.style.opacity = "1";
+                }, 50);
+
+                imageIndex++;
+            }, 100);
+        }
+
+        createInitialGrid();
+
+        // Start random fading after 3 seconds
+        setTimeout(() => {
+            randomFadeInterval = setInterval(fadeInRandomImage, 100);
+
+            // Start final directory fade after 8 seconds (3 + 5)
+            setTimeout(() => {
+                clearInterval(randomFadeInterval);
+                fadeInFinalDirectory();
+            }, 5000);
+        }, 3000);
+    </script>
+</body>
+</html>
