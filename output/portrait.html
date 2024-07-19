@@ -60,12 +60,21 @@
     </div>
 
     <script>        
+        function getNumericParamValue(paramName, defaultValue) {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                return Number(params.get(paramName)) || defaultValue;
+            } catch {
+                return defaultValue;
+            }
+        }
+
         const parentDirectory = ".";
         const imageExtension = ".jpg";
         const totalDirectories = 40;
         const imagesPerDirectory = 80;
-        const fadePace = 200; // Set the same pace for both random and final fade
-        const fadeInTimeMs = 50;
+        const fadePace = getNumericParamValue("timeBetweenImages", 500); // Set the same pace for both random and final fade
+        const fadeInTimeMs = getNumericParamValue("fadeEffectTime", 75);
 
         const gridContainer = document.getElementById("grid-container");
         let currentDirectory;
