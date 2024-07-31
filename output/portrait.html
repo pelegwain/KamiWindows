@@ -6,13 +6,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 
     <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
       body {
         background-color: rgb(0, 0, 0);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
       }
       .grid-container-wrapper {
         position: relative;
-        width: 100vw;
-        margin: auto 0;
+        width: 98vw;
       }
       .grid-container {
         display: grid;
@@ -24,7 +32,7 @@
         position: relative;
       }
       .grid-item img {
-        height: 12.5vw;
+        height: 12.25vw;
         margin: 0;
         padding: 0;
         display: block;
